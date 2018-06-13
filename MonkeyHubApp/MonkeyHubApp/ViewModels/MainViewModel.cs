@@ -1,36 +1,50 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace MonkeyHubApp.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        private string _descricao;
+        private string _searchTerm;
 
-        public string Descricao 
-        {
-            get { return _descricao; }
-            set { SetProperty(ref _descricao, value); }
+        public string SearchTerm {
+            get { return _searchTerm; }
+            set
+            {
+                if (SetProperty(ref _searchTerm, value))
+                    SearchCommand.ChangeCanExecute();
+            }
         }
+
+        public Command SearchCommand { get; }
 
         public MainViewModel()
         {
-            Descricao = "Olá mundo! Eu estou aqui!";
+            SearchCommand = new Command(ExecuteSearchCommand, CanExecuteSearchCommand);
+        }
 
-            Task.Delay(3000).ContinueWith(async t =>
+        private async void ExecuteSearchCommand()
+        {
+            await Task.Delay(2000);
+
+            bool resposta = await App.Current.MainPage.DisplayAlert("MonkeyHubApp", $"Você pesquisou por {SearchTerm}?", "Sim", "Não");
+
+            if (resposta)
             {
-                Descricao = "Meu texto mudou";
+                await App.Current.MainPage.DisplayAlert("MonkeyHubApp", "Obrigado", "Ok");
+            }
 
-                for (int i = 1; i < 10; i++)
-                {
-                    await Task.Delay(1000);
-                    Descricao = $"Meu texto mudou {i}";
-                }
-            });
+            else
+            {
+                await App.Current.MainPage.DisplayAlert("MonkeyHubApp", "De nada", "Ok");
+            }
+        }
+
+        private bool CanExecuteSearchCommand()
+        {
+            return string.IsNullOrWhiteSpace(SearchTerm) == false;
         }
     }
 }

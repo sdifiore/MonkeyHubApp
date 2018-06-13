@@ -5,10 +5,8 @@
              x:Class="MonkeyHubApp.MainPage">
 
     <StackLayout>
-        <!-- Place new controls here -->
-    	<Label Text="{Binding Descricao}" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+        <Entry Text="{Binding SearchTerm}" />
+        <Button Text="Pesquisar" Command="{Binding SearchCommand}" />
     </StackLayout>
 
 </ContentPage>
